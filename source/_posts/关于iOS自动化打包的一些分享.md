@@ -20,12 +20,13 @@ title: 关于iOS自动化打包的一些分享
 
 下面我介绍使用过程中需要注意的一些方面: 
 
-![](关于iOS自动化打包的一些分享/xcode_integration.png)
+![](https://raw.githubusercontent.com/LoyalToOrigin/loyaltoorigin.github.io/hexo_source/source/_posts/%E5%85%B3%E4%BA%8EiOS%E8%87%AA%E5%8A%A8%E5%8C%96%E6%89%93%E5%8C%85%E7%9A%84%E4%B8%80%E4%BA%9B%E5%88%86%E4%BA%AB/xcode_integration.png)
+
 如上图所示, 如果对打包没有特别需求, 勾选Archive, 选择对应Scheme、Configuration, 指定一个plist文件, 后面的Triggers不需要写任何代码, 便可以打出对应的包。
 
 
 
-![alt text](https://image.baidu.com/search/detail?ct=503316480&z=0&ipn=false&word=%E7%BE%8E%E5%A5%B3&hs=2&pn=0&spn=0&di=27234594200&pi=0&rn=1&tn=baiduimagedetail&is=0%2C0&ie=utf-8&oe=utf-8&cl=2&lm=-1&cs=1052804691%2C3715485387&os=4224179711%2C2692673247&simid=4153173810%2C643694390&adpicid=0&lpn=0&ln=30&fr=ala&fm=&sme=&cg=girl&bdtype=0&oriquery=%E7%BE%8E%E5%A5%B3&objurl=http%3A%2F%2Fimage.tianjimedia.com%2FuploadImages%2F2015%2F209%2F42%2F6H182F668EP9.jpg&fromurl=ippr_z2C%24qAzdH3FAzdH3Frtv_z%26e3Byjfhy_z%26e3Bv54AzdH3FbAzdH3Fbd099aab_9_z%26e3Bfip4s&gsm=0 "美女")
+
 
 
 
