@@ -28,7 +28,7 @@ title: iOS自动化打包一次编译不同环境导出ipa探索
 xcodebuild archive -workspace ${work_space} -scheme ${scheme} -configuration ${configurationDistribution} -archivePath ${archivePath}
 ```
 
-如果对打包命令不是很了解的, 可以查看我的上一篇文章文章:[关于iOS自动化打包的一些分享](http://loyaltoorigin.github.io/)
+如果对打包命令不是很了解的, 可以查看我的上一篇文章文章:[关于iOS自动化打包的一些分享](https://loyaltoorigin.github.io/2018/01/01/%E5%85%B3%E4%BA%8EiOS%E8%87%AA%E5%8A%A8%E5%8C%96%E6%89%93%E5%8C%85%E7%9A%84%E4%B8%80%E4%BA%9B%E5%88%86%E4%BA%AB/)
 
 首先, 我们进入到 .xcarchive 文件目录, 发现里面一个 Info.plist 文件, 打开如下显示:
 ![](http://p28r7eh75.bkt.clouddn.com/iOS%E8%87%AA%E5%8A%A8%E5%8C%96%E6%89%93%E5%8C%85%E4%B8%80%E6%AC%A1%E7%BC%96%E8%AF%91%E4%B8%8D%E5%90%8C%E7%8E%AF%E5%A2%83%E5%AF%BC%E5%87%BAipa%E6%8E%A2%E7%B4%A2/xcarchive_infoplist.png)
@@ -115,7 +115,7 @@ xcodebuild -exportArchive -archivePath YourAppName.xcarchive -exportPath $(pwd) 
 
 ![](http://p28r7eh75.bkt.clouddn.com/iOS%E8%87%AA%E5%8A%A8%E5%8C%96%E6%89%93%E5%8C%85%E4%B8%80%E6%AC%A1%E7%BC%96%E8%AF%91%E4%B8%8D%E5%90%8C%E7%8E%AF%E5%A2%83%E5%AF%BC%E5%87%BAipa%E6%8E%A2%E7%B4%A2/export_succeed.png)
 
-如果对于 **exportOptionsPlist** 不了解的, 也可以看我的上篇文章:[关于iOS自动化打包的一些分享](http://loyaltoorigin.github.io/)
+如果对于 **exportOptionsPlist** 不了解的, 也可以看我的上篇文章:[关于iOS自动化打包的一些分享](https://loyaltoorigin.github.io/2018/01/01/%E5%85%B3%E4%BA%8EiOS%E8%87%AA%E5%8A%A8%E5%8C%96%E6%89%93%E5%8C%85%E7%9A%84%E4%B8%80%E4%BA%9B%E5%88%86%E4%BA%AB/)
 。
 
 # 注意点
