@@ -618,3 +618,33 @@
 {"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":21141,"level":20,"msg":"Database saved","time":"2018-04-07T08:29:28.066Z","v":0}
 {"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":21141,"level":30,"msg":"Catch you later","time":"2018-04-07T08:47:31.303Z","v":0}
 {"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":21141,"level":20,"msg":"Database saved","time":"2018-04-07T08:47:31.322Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Hexo version: \u001b[35m3.7.1\u001b[39m","time":"2018-04-11T11:33:45.388Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Working directory: \u001b[35m~/loyaltoorigin.github.io/\u001b[39m","time":"2018-04-11T11:33:45.397Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Config loaded: \u001b[35m~/loyaltoorigin.github.io/_config.yml\u001b[39m","time":"2018-04-11T11:33:45.488Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-asset-image\u001b[39m","time":"2018-04-11T11:33:45.567Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-generator-archive\u001b[39m","time":"2018-04-11T11:33:45.570Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-deployer-git\u001b[39m","time":"2018-04-11T11:33:45.590Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-generator-category\u001b[39m","time":"2018-04-11T11:33:45.592Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-generator-index\u001b[39m","time":"2018-04-11T11:33:45.593Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-generator-tag\u001b[39m","time":"2018-04-11T11:33:45.594Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-renderer-ejs\u001b[39m","time":"2018-04-11T11:33:45.599Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-renderer-marked\u001b[39m","time":"2018-04-11T11:33:45.605Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-renderer-stylus\u001b[39m","time":"2018-04-11T11:33:45.606Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-server\u001b[39m","time":"2018-04-11T11:33:45.677Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Script loaded: \u001b[35mthemes/hexo-theme-next/scripts/helpers.js\u001b[39m","time":"2018-04-11T11:33:45.687Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Script loaded: \u001b[35mthemes/hexo-theme-next/scripts/merge-configs.js\u001b[39m","time":"2018-04-11T11:33:45.691Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Script loaded: \u001b[35mthemes/hexo-theme-next/scripts/merge.js\u001b[39m","time":"2018-04-11T11:33:45.695Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Script loaded: \u001b[35mthemes/hexo-theme-next/scripts/tags/button.js\u001b[39m","time":"2018-04-11T11:33:45.695Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Script loaded: \u001b[35mthemes/hexo-theme-next/scripts/tags/center-quote.js\u001b[39m","time":"2018-04-11T11:33:45.696Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Script loaded: \u001b[35mthemes/hexo-theme-next/scripts/tags/exturl.js\u001b[39m","time":"2018-04-11T11:33:45.697Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Script loaded: \u001b[35mthemes/hexo-theme-next/scripts/tags/full-image.js\u001b[39m","time":"2018-04-11T11:33:45.697Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Script loaded: \u001b[35mthemes/hexo-theme-next/scripts/tags/group-pictures.js\u001b[39m","time":"2018-04-11T11:33:45.698Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Script loaded: \u001b[35mthemes/hexo-theme-next/scripts/tags/include-raw.js\u001b[39m","time":"2018-04-11T11:33:45.700Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Script loaded: \u001b[35mthemes/hexo-theme-next/scripts/tags/label.js\u001b[39m","time":"2018-04-11T11:33:45.700Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Script loaded: \u001b[35mthemes/hexo-theme-next/scripts/tags/lazy-image.js\u001b[39m","time":"2018-04-11T11:33:45.701Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Script loaded: \u001b[35mthemes/hexo-theme-next/scripts/tags/note.js\u001b[39m","time":"2018-04-11T11:33:45.701Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":20,"msg":"Script loaded: \u001b[35mthemes/hexo-theme-next/scripts/tags/tabs.js\u001b[39m","time":"2018-04-11T11:33:45.702Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":30,"msg":"Deploying: \u001b[35mgit\u001b[39m","time":"2018-04-11T11:33:45.704Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":30,"msg":"Clearing .deploy_git folder...","time":"2018-04-11T11:33:45.713Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":30,"msg":"Copying files from public folder...","time":"2018-04-11T11:33:46.984Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":73127,"level":30,"msg":"Copying files from extend dirs...","time":"2018-04-11T11:33:47.054Z","v":0}
