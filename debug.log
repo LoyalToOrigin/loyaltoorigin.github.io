@@ -680,3 +680,5 @@
 {"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":75675,"level":30,"msg":"Clearing .deploy_git folder...","time":"2018-04-11T11:44:10.946Z","v":0}
 {"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":75675,"level":30,"msg":"Copying files from public folder...","time":"2018-04-11T11:44:12.228Z","v":0}
 {"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":75675,"level":30,"msg":"Copying files from extend dirs...","time":"2018-04-11T11:44:12.275Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":75675,"level":30,"msg":"Deploy done: \u001b[35mgit\u001b[39m","time":"2018-04-11T11:44:22.353Z","v":0}
+{"name":"hexo","hostname":"xiechendeMacBook-Pro.local","pid":75675,"level":20,"msg":"Database saved","time":"2018-04-11T11:44:22.359Z","v":0}
