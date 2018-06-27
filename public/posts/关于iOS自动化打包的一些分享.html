@@ -100,9 +100,9 @@
 
 
   <meta name="description" content="说到自动化打包，相信大家在日常开发中都有所接触，尤其是在多分支并行开发的情况下，自动化打包显得尤为重要，很多时候，我们打包一般是打及成分支的包，开发却在开发分支上，如果采取手动打包，我们需要反复切分支，不仅影响工作效率，而且会打断我们的开发思维，而却在工程较大的情况下，xcode每次indexing需要的时间就很久。 即使对于很多单分支开发的小项目来说，自动化打 包的优势也是不言而喻的，因为在手动">
-<meta property="og:type" content="article">
+<meta property="og:type" content="website">
 <meta property="og:title" content="关于iOS自动化打包的一些分享">
-<meta property="og:url" content="https://github.com/LoyalToOrigin/loyaltoorigin.github.io.git/2018/01/11/关于iOS自动化打包的一些分享/index.html">
+<meta property="og:url" content="https://github.com/LoyalToOrigin/loyaltoorigin.github.io.git/posts/关于iOS自动化打包的一些分享.html">
 <meta property="og:site_name" content="loyaltoorigin">
 <meta property="og:description" content="说到自动化打包，相信大家在日常开发中都有所接触，尤其是在多分支并行开发的情况下，自动化打包显得尤为重要，很多时候，我们打包一般是打及成分支的包，开发却在开发分支上，如果采取手动打包，我们需要反复切分支，不仅影响工作效率，而且会打断我们的开发思维，而却在工程较大的情况下，xcode每次indexing需要的时间就很久。 即使对于很多单分支开发的小项目来说，自动化打 包的优势也是不言而喻的，因为在手动">
 <meta property="og:locale" content="zh-Hans">
@@ -130,7 +130,7 @@
 
 
 
-  <link rel="canonical" href="https://github.com/LoyalToOrigin/loyaltoorigin.github.io.git/2018/01/11/关于iOS自动化打包的一些分享/"/>
+  <link rel="canonical" href="https://github.com/LoyalToOrigin/loyaltoorigin.github.io.git/posts/关于iOS自动化打包的一些分享.html"/>
 
 
 
@@ -252,6 +252,19 @@
   
     
 
+    
+    
+      
+      
+    
+      
+      
+    
+    
+
+  
+
+
   
 
   
@@ -277,87 +290,30 @@
 
   <div id="posts" class="posts-expand">
     
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://github.com/LoyalToOrigin/loyaltoorigin.github.io.git/2018/01/11/关于iOS自动化打包的一些分享/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="loyaltoorigin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="loyaltoorigin">
-    </span>
-
     
+    
+    <div class="post-block page">
       <header class="post-header">
 
-        
-        
-          <h1 class="post-title" itemprop="name headline">关于iOS自动化打包的一些分享</h1>
-        
+<h1 class="post-title" itemprop="name headline">关于iOS自动化打包的一些分享</h1>
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-11T00:00:00+08:00">2018-01-11</time>
-            
+<div class="post-meta">
+  
+  
 
-            
-            
 
-            
-          </span>
 
-          
+</div>
 
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
+</header>
 
       
       
-
       
-        <p>说到自动化打包，相信大家在日常开发中都有所接触，尤其是在多分支并行开发的情况下，自动化打包显得尤为重要，很多时候，我们打包一般是打及成分支的包，开发却在开发分支上，如果采取手动打包，我们需要反复切分支，不仅影响工作效率，而且会打断我们的开发思维，而却在工程较大的情况下，xcode每次indexing需要的时间就很久。</p>
+      <div class="post-body">
+        
+        
+          <p>说到自动化打包，相信大家在日常开发中都有所接触，尤其是在多分支并行开发的情况下，自动化打包显得尤为重要，很多时候，我们打包一般是打及成分支的包，开发却在开发分支上，如果采取手动打包，我们需要反复切分支，不仅影响工作效率，而且会打断我们的开发思维，而却在工程较大的情况下，xcode每次indexing需要的时间就很久。</p>
 <p>即使对于很多单分支开发的小项目来说，自动化打 包的优势也是不言而喻的，因为在手动打包的同时，基本可以说是什么事都做不了的，你需要一步步等待archive，export这些机械化的步骤。而有了自动化打包，你只需要点击一个按钮，便可以继续自己的开发。所以，自动化打包势在必行。</p>
 <p>本文主要记录了我在公司自动化打包布置中的一些探索，及各平台的优缺点和配置过程踩过的坑。</p>
 <p>谈到iOS的持续集成，我们首先想到的一定会是jenkins，这里我先介绍下我司采用的Mac OS Server(以下简称Server)这个平台的一些优缺点。</p>
@@ -434,64 +390,19 @@
 <p>经历上述脚本后，就会在指定的exportPath路径下生成.ipa文件。我们一般是要将ipa和dSYM文件copy到指定的文件夹供测试去取，后面便是一段处理繁琐的路径的脚本，脚本本身没任何难度，但是要格外注意，且测试起来需要花费一定的时间，如果使用fastlane就可以避免这个烦恼。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文主要是团队中的一次分享后的整理，并不是特别细致的教程，只是对当下的自动化打包的一些尝试及过程中遇到的一些问题和自己的一点思考，如果有说的不对的地方，望不吝赐教。</p>
 
+        
+      </div>
+      
+      
       
     </div>
-
     
 
+
+
     
     
     
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2017/12/29/hello-world/" rel="next" title="Hello World">
-                <i class="fa fa-chevron-left"></i> Hello World
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/01/11/Masonry源码解读/" rel="prev" title="Masonry源码解读">
-                Masonry源码解读 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
   </div>
 
 
@@ -541,15 +452,6 @@
 
           
             <nav class="site-state motion-element">
-              
-                <div class="site-state-item site-state-posts">
-                
-                  <a href="/archives/">
-                
-                    <span class="site-state-item-count">4</span>
-                    <span class="site-state-item-name">posts</span>
-                  </a>
-                </div>
               
 
               
