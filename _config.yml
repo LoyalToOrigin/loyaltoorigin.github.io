@@ -78,13 +78,13 @@ pagination_dir: page
 #    - jekyll-feed
 ## Themes: https://hexo.io/themes/
 theme: hexo-theme-next
-# theme: hexo-theme-yilia
+##hexo-theme-yilia
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://github.com/LoyalToOrigin/loyaltoorigin.github.io.git 
+  repo: https://github.com/LoyalToOrigin/loyaltoorigin.github.io 
   branch: master
   message:
   extend_dirs: / 
