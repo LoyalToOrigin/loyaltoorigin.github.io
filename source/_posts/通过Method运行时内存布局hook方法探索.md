@@ -67,13 +67,13 @@ void hookedSayHello (id self, SEL _cmd, ...) {
     [person sayHello];
 ```
 
-### 遇到的问题, 还是调用原来的方法实现
+## 遇到的问题, 还是调用原来的方法实现
 
 此时却发现, 打印出来的却和我想象不太一样, 仍然是调用了原来的sayHello方法, 而且打个断点发现method的imp指针也确实指向了 void hookedSayHello (id self, SEL _cmd, ...) 这个函数,  这确实有些让人捉摸不透。 
 
 ![直接修改方法imp](http://p28r7eh75.bkt.clouddn.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/hooked_imp.png)
 
-### 浅尝辄止--method _setImplementation
+## 浅尝辄止--method _setImplementation
 
 于是怀疑人生的我, 又使用Runtime提供的API method_setImplementation进行相同操作, 发现和以往一样, 毫无问题, 那么一定是做了一些处理, 查其源码, 发现了一个很可疑的函数 flushCaches, 见名知意, 清除缓存。
 
