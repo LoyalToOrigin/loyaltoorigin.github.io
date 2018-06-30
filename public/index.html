@@ -277,6 +277,173 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://github.com/LoyalToOrigin/loyaltoorigin.github.io.git/2018/06/30/通过Method运行时内存布局hook方法探索/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="loyaltoorigin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="loyaltoorigin">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/30/通过Method运行时内存布局hook方法探索/" itemprop="url">
+                  通过Method运行时内存布局hook方法探索
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-06-30 00:00:00 / Modified: 13:21:32" itemprop="dateCreated datePublished" datetime="2018-06-30T00:00:00+08:00">2018-06-30</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在iOS开发中, Method Swizzling想必大家都不陌生, 可以以此来对方法进行hook, 做一些我们希望做的事情, 比如页面进入退出, 可以对viewWillAppear及viewWillDisappear进行hook, 从而进行一些埋点日志相关的事情。</p>
+<p>那么, Method Swizzling的原理到底是怎样的呢? 这个问题, 即使没自己研究过, 大多数人也有所耳闻, 简单来说, 无非就是修改方法的imp指向, 让其指向我们hook的方法。如果是这样的话, 我们是否可以不用Runtime提供的API如method_setImplementation、method_exchangeImplementation等函数而通过对象及方法的内存布局来实现呢? 答案是肯定的, 下面便是我在此过程中的一些探索和理解。</p>
+<p>本文描述大部分内容对开发没有太大帮助, 但是对于更加了解运行时方法调用有一定帮助。</p>
+<h1 id="直接赋值Method的IMP进行hook"><a href="#直接赋值Method的IMP进行hook" class="headerlink" title="直接赋值Method的IMP进行hook"></a>直接赋值Method的IMP进行hook</h1><p>要想通过方法的内存布局来修改, 一定要对方法的内存布局有所了解, 查看源码可以知道Method的内存布局如下所示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">struct method_t &#123;</span><br><span class="line">    SEL name;</span><br><span class="line">    const char *types;</span><br><span class="line">    IMP imp;</span><br><span class="line"></span><br><span class="line">    struct SortBySELAddress :</span><br><span class="line">        public std::binary_function&lt;const method_t&amp;,</span><br><span class="line">                                    const method_t&amp;, bool&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        bool operator() (const method_t&amp; lhs,</span><br><span class="line">                         const method_t&amp; rhs)</span><br><span class="line">        &#123; return lhs.name &lt; rhs.name; &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>上面结构中, 很容易就找到我们想要的东西IMP, 话不多少, 赶紧进行hook。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">@implementation Person</span><br><span class="line"></span><br><span class="line">+ (void)load &#123;</span><br><span class="line">    static dispatch_once_t onceToken;</span><br><span class="line">    dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">        Class aClass = [self class];</span><br><span class="line">        </span><br><span class="line">        SEL originalSelector = @selector(sayHello);</span><br><span class="line">        Method originalMethod = class_getInstanceMethod(aClass, originalSelector);</span><br><span class="line">       </span><br><span class="line">        struct method_t *method = (struct method_t *)originalMethod;</span><br><span class="line">        method-&gt;imp = (IMP)hookedSayHello;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)sayHello &#123;</span><br><span class="line">    NSLog(@&quot;Hello, everybody!&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void hookedSayHello (id self, SEL _cmd, ...) &#123;</span><br><span class="line">    NSLog(@&quot;This is hooked sayHello&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>然后再main.m中调用:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Person *person = [[Person alloc] init];</span><br><span class="line">[person sayHello];</span><br></pre></td></tr></table></figure>
+<h3 id="遇到的问题-还是调用原来的方法实现"><a href="#遇到的问题-还是调用原来的方法实现" class="headerlink" title="遇到的问题, 还是调用原来的方法实现"></a>遇到的问题, 还是调用原来的方法实现</h3><p>此时却发现, 打印出来的却和我想象不太一样, 仍然是调用了原来的sayHello方法, 而且打个断点发现method的imp指针也确实指向了 void hookedSayHello (id self, SEL _cmd, …) 这个函数,  这确实有些让人捉摸不透。 </p>
+<p><img src="http://p28r7eh75.bkt.clouddn.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/hooked_imp.png" alt="直接修改方法imp"></p>
+<h3 id="浅尝辄止–method-setImplementation"><a href="#浅尝辄止–method-setImplementation" class="headerlink" title="浅尝辄止–method _setImplementation"></a>浅尝辄止–method _setImplementation</h3><p>于是怀疑人生的我, 又使用Runtime提供的API method_setImplementation进行相同操作, 发现和以往一样, 毫无问题, 那么一定是做了一些处理, 查其源码, 发现了一个很可疑的函数 flushCaches, 见名知意, 清除缓存。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">static IMP </span><br><span class="line">_method_setImplementation(Class cls, method_t *m, IMP imp)</span><br><span class="line">&#123;</span><br><span class="line">    runtimeLock.assertWriting();</span><br><span class="line"></span><br><span class="line">    if (!m) return nil;</span><br><span class="line">    if (!imp) return nil;</span><br><span class="line"></span><br><span class="line">    IMP old = m-&gt;imp;</span><br><span class="line">    m-&gt;imp = imp;</span><br><span class="line"></span><br><span class="line">    // Cache updates are slow if cls is nil (i.e. unknown)</span><br><span class="line">    // RR/AWZ updates are slow if cls is nil (i.e. unknown)</span><br><span class="line">    // fixme build list of classes whose Methods are known externally?</span><br><span class="line"></span><br><span class="line">    flushCaches(cls); </span><br><span class="line"></span><br><span class="line">    updateCustomRR_AWZ(cls, m);</span><br><span class="line"></span><br><span class="line">    return old;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/***********************************************************************</span><br><span class="line">* _objc_flush_caches</span><br><span class="line">* Flushes all caches.</span><br><span class="line">* (Historical behavior: flush caches for cls, its metaclass, </span><br><span class="line">* and subclasses thereof. Nil flushes all classes.)</span><br><span class="line">* Locking: acquires runtimeLock</span><br><span class="line">**********************************************************************/</span><br><span class="line">static void flushCaches(Class cls)</span><br><span class="line">&#123;</span><br><span class="line">    runtimeLock.assertWriting();</span><br><span class="line"></span><br><span class="line">    mutex_locker_t lock(cacheUpdateLock);</span><br><span class="line"></span><br><span class="line">    if (cls) &#123;</span><br><span class="line">        foreach_realized_class_and_subclass(cls, ^(Class c)&#123; // 遍历子类</span><br><span class="line">            cache_erase_nolock(c);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        foreach_realized_class_and_metaclass(^(Class c)&#123;</span><br><span class="line">            cache_erase_nolock(c);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Reset this entire cache to the uncached lookup by reallocating it.</span><br><span class="line">// This must not shrink the cache - that breaks the lock-free scheme.</span><br><span class="line">void cache_erase_nolock(Class cls)</span><br><span class="line">&#123;</span><br><span class="line">    cacheUpdateLock.assertLocked();</span><br><span class="line"></span><br><span class="line">    cache_t *cache = getCache(cls);</span><br><span class="line"></span><br><span class="line">    mask_t capacity = cache-&gt;capacity();</span><br><span class="line">    if (capacity &gt; 0  &amp;&amp;  cache-&gt;occupied() &gt; 0) &#123;</span><br><span class="line">        auto oldBuckets = cache-&gt;buckets();</span><br><span class="line">        auto buckets = emptyBucketsForCapacity(capacity);</span><br><span class="line">        cache-&gt;setBucketsAndMask(buckets, capacity - 1); // also clears occupied</span><br><span class="line"></span><br><span class="line">        cache_collect_free(oldBuckets, capacity);</span><br><span class="line">        cache_collect(false);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上述源码可知, 在flushCaches函数中, 这个函数会把当前类本身, 当前类的元类以及当前类的子类的方法缓存全部清空, 这里我们也可以自己验证一下, </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">+ (void)load &#123;</span><br><span class="line">    static dispatch_once_t onceToken;</span><br><span class="line">    dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">        Class aClass = [self class];</span><br><span class="line">        </span><br><span class="line">        SEL originalSelector = @selector(sayHello);</span><br><span class="line">              </span><br><span class="line">        Method originalMethod = class_getInstanceMethod(aClass, originalSelector);</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">//        method_setImplementation(originalMethod, (IMP)hookedSayHello); //Runtime API, 可以发现cache被清除了, 可以打开注释, 验证结果</span><br><span class="line">        </span><br><span class="line">        struct method_t *method = (struct method_t *)originalMethod;</span><br><span class="line">//        method-&gt;imp = (IMP)hookedSayHello; // 直接复制imp指针</span><br><span class="line"></span><br><span class="line">        struct my_objc_class *clz = (__bridge struct my_objc_class *)aClass;</span><br><span class="line">        uint32_t cacheCount = clz-&gt;cache.capacity();</span><br><span class="line">        NSLog(@&quot;cacheCount : %d&quot;, cacheCount);</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        for (NSInteger i = 0; i &lt; cacheCount; i++) &#123;</span><br><span class="line">            char *key = (char *)((clz-&gt;cache._buckets + i)-&gt;_key);</span><br><span class="line">            // 这里设置一下</span><br><span class="line">            printf(&quot;%ld - %s\n&quot;, i, key); // 测试</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当调用Runtime API method_setImplementation, 打印如下图所示:<br><img src="http://p28r7eh75.bkt.clouddn.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/method_setImplementation_cache.png" alt="调用Runtime API method_setImplementation,cache被清除"><br>当直接给imp指针赋值, 打印如下图所示:<br><img src="http://p28r7eh75.bkt.clouddn.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/direct_imp_cache.png" alt="imp指针赋值,cache没被清除"></p>
+<p>可以看出, 当直接给imp指针复制, 不清除方法缓存, 其中打印的sayHello正是我们hook的方法, 之前的疑惑也一扫而空, 虽然方法的imp指向发生了改变, 但是方法缓存中的sayHello对应的imp并没有发生改变。</p>
+<p>我们知道, Objective-C通过方法缓存来提升方法调用速度, 缓存中找不到, 再去类对象的方法列表中去查找, 调用后便加入到方法缓存中, 这点也可以通过objc_msgSend的源码来确认, objc_msgSend的源码是汇编实现的, 即使看不懂汇编也没事, 通过旁边的注释, 大概来看出来调用流程: 在方法缓存中寻找, 找到直接返回方法IMP, 否则调用__objc_msgSend_uncached, 去方法列表中查找。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">/// objc_msgSend, 除去一些nil验证检测后, 调用 CacheLookup LOOKUP</span><br><span class="line">LLookup_GetIsaDone:</span><br><span class="line">	CacheLookup LOOKUP		// returns imp</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/// CacheLookup</span><br><span class="line">	.macro CacheHit</span><br><span class="line">.if $0 == NORMAL</span><br><span class="line">	MESSENGER_END_FAST</span><br><span class="line">	br	x17			// call imp</span><br><span class="line">.elseif $0 == GETIMP</span><br><span class="line">	mov	x0, x17			// return imp</span><br><span class="line">	ret</span><br><span class="line">.elseif $0 == LOOKUP</span><br><span class="line">	ret				// return imp via x17</span><br><span class="line">.else</span><br><span class="line">.abort oops</span><br><span class="line">.endif</span><br><span class="line">.endmacro</span><br><span class="line"></span><br><span class="line">.macro CheckMiss</span><br><span class="line">	// miss if bucket-&gt;sel == 0</span><br><span class="line">.if $0 == GETIMP</span><br><span class="line">	cbz	x9, LGetImpMiss</span><br><span class="line">.elseif $0 == NORMAL</span><br><span class="line">	cbz	x9, __objc_msgSend_uncached</span><br><span class="line">.elseif $0 == LOOKUP</span><br><span class="line">	cbz	x9, __objc_msgLookup_uncached</span><br></pre></td></tr></table></figure>
+<h1 id="作怪到底–自己修改方法缓存对应的imp"><a href="#作怪到底–自己修改方法缓存对应的imp" class="headerlink" title="作怪到底–自己修改方法缓存对应的imp"></a>作怪到底–自己修改方法缓存对应的imp</h1><p>既然都到这里, 不妨尝试自己去修改方法缓存中对应imp。其实从Objective-C Runtime层面来说, 对象、方法、block等都是以结构体的形式存在内存中, 想去改对象的属性, 方法的实现会是block的实现, 都是要对它们的内存布局有所了解。</p>
+<p>前面的分析把疑惑基本解决了, 现在要做的就比较简单是了, 只需要将方法缓存以及其他需要用到的结构体如对象、方法等的结构抽出来, 自己声明一个结构体, 把需要用上的成员变量和方法带上即可, 不需要用上可以直接删除。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">struct bucket_t &#123;</span><br><span class="line">    cache_key_t _key;</span><br><span class="line">    IMP _imp;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">struct cache_t &#123;</span><br><span class="line">    bucket_t *_buckets;</span><br><span class="line">    mask_t _mask;</span><br><span class="line">    mask_t _occupied;</span><br><span class="line">public:</span><br><span class="line">    struct bucket_t *buckets();</span><br><span class="line">    mask_t mask();</span><br><span class="line">    mask_t occupied();</span><br><span class="line">    void incrementOccupied();</span><br><span class="line">    void setBucketsAndMask(struct bucket_t *newBuckets, mask_t newMask);</span><br><span class="line">    void initializeToEmpty();</span><br><span class="line">    </span><br><span class="line">    mask_t capacity();</span><br><span class="line">    bool isConstantEmptyCache();</span><br><span class="line">    bool canBeFreed();</span><br><span class="line">    </span><br><span class="line">    static size_t bytesForCapacity(uint32_t cap);</span><br><span class="line">    static struct bucket_t * endMarker(struct bucket_t *b, uint32_t cap);</span><br><span class="line">    </span><br><span class="line">    void expand();</span><br><span class="line">    void reallocate(mask_t oldCapacity, mask_t newCapacity);</span><br><span class="line">    struct bucket_t * find(cache_key_t key, id receiver);</span><br><span class="line">    </span><br><span class="line">    static void bad_cache(id receiver, SEL sel, Class isa) __attribute__((noreturn));</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>接下来, 只需要将load方法中添加一点代码进行验证即可:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">+ (void)load &#123;</span><br><span class="line">    static dispatch_once_t onceToken;</span><br><span class="line">    dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">        Class aClass = [self class];</span><br><span class="line">//        Class aClass = self; // 不给self发消息, cache不会生成, 结果就和我们的预想一样</span><br><span class="line">        </span><br><span class="line">        SEL originalSelector = @selector(sayHello);</span><br><span class="line">        </span><br><span class="line">        Method originalMethod = class_getInstanceMethod(aClass, originalSelector);</span><br><span class="line">        </span><br><span class="line">//        method_setImplementation(originalMethod, (IMP)hookedSayHello); //Runtime API, 可以发现cache被清除了, 可以打开注释, 验证结果</span><br><span class="line">        </span><br><span class="line">        struct method_t *method = (struct method_t *)originalMethod;</span><br><span class="line">        method-&gt;imp = (IMP)hookedSayHello;</span><br><span class="line">        </span><br><span class="line">        // cache问题, 因为 已经和 imp缓存了, 直接会调用原来方法</span><br><span class="line">        // method_setImplementation 中有个函数 flushCache -&gt; cache_erase_nolock, 会重新设置 cache</span><br><span class="line">        </span><br><span class="line">        // 修改cache</span><br><span class="line">        struct my_objc_class *clz = (__bridge struct my_objc_class *)aClass;</span><br><span class="line">        uint32_t cacheCount = clz-&gt;cache.capacity();</span><br><span class="line">        NSLog(@&quot;cacheCount : %d&quot;, cacheCount);</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        for (NSInteger i = 0; i &lt; cacheCount; i++) &#123;</span><br><span class="line">            char *key = (char *)((clz-&gt;cache._buckets + i)-&gt;_key);</span><br><span class="line">            // 这里设置一下</span><br><span class="line">            printf(&quot;%ld - %s\n&quot;, i, key); // 测试</span><br><span class="line">            </span><br><span class="line">            if (key) &#123;</span><br><span class="line">                NSString *selectorName = [NSString stringWithUTF8String:key];</span><br><span class="line"></span><br><span class="line">                if ([selectorName isEqualToString:@&quot;sayHello&quot;]) &#123;</span><br><span class="line">                    (clz-&gt;cache._buckets + i)-&gt;_imp = (IMP)hookedSayHello;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://p28r7eh75.bkt.clouddn.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/direct_imp_cache_and_change_cache_imp.png" alt="自己修改cache"></p>
+<p>发现打印的确实是我们希望的实现, 当然这里只是一个简单的类, 对于有子类的情况没做验证, 如果有子类的情况下, 还是比较复杂的, 对于子类是否实现了该方法也是有区别的, 这也许也是 method_setImplementation 直接暴力地将当前类和子类的缓存都清空的原因吧!</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过本次探索, 对方法调用以及底层的一些流程有了一定的了解, 虽然对于开发确实没太大帮助, 但对于理解底层机制有一定帮助。在日常学习中, 可以配合源码, 通过自己的尝试, 一定可以对相关知识有更深刻地理解。</p>
+<p>代码地址: <a href="">https://github.com/LoyalToOrigin/HookMethodWithLayout</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://github.com/LoyalToOrigin/loyaltoorigin.github.io.git/2018/03/08/iOS自动化打包之重签名导出不同证书ipa探索/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -722,7 +889,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
