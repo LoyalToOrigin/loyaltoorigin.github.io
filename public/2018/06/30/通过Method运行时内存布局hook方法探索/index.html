@@ -119,7 +119,7 @@
 <meta property="og:image" content="http://p28r7eh75.bkt.clouddn.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/method_setImplementation_cache.png">
 <meta property="og:image" content="http://p28r7eh75.bkt.clouddn.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/direct_imp_cache.png">
 <meta property="og:image" content="http://p28r7eh75.bkt.clouddn.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/direct_imp_cache_and_change_cache_imp.png">
-<meta property="og:updated_time" content="2018-06-30T05:35:32.862Z">
+<meta property="og:updated_time" content="2018-09-18T09:44:51.091Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="通过Method运行时内存布局hook方法探索">
 <meta name="twitter:description" content="在iOS开发中, Method Swizzling想必大家都不陌生, 可以以此来对方法进行hook, 做一些我们希望做的事情, 比如页面进入退出, 可以对viewWillAppear及viewWillDisappear进行hook, 从而进行一些埋点日志相关的事情。 那么, Method Swizzling的原理到底是怎样的呢? 这个问题, 即使没自己研究过, 大多数人也有所耳闻, 简单来说, 无">
@@ -327,12 +327,24 @@
                 
               
 
-              <time title="Created: 2018-06-30 00:00:00 / Modified: 13:35:32" itemprop="dateCreated datePublished" datetime="2018-06-30T00:00:00+08:00">2018-06-30</time>
+              <time title="Created: 2018-06-30 00:00:00" itemprop="dateCreated datePublished" datetime="2018-06-30T00:00:00+08:00">2018-06-30</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-09-18 17:44:51" itemprop="dateModified" datetime="2018-09-18T17:44:51+08:00">2018-09-18</time>
               
             
           </span>
@@ -340,6 +352,16 @@
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/06/30/通过Method运行时内存布局hook方法探索/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2018/06/30/通过Method运行时内存布局hook方法探索/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -454,6 +476,9 @@
           </div>
           
 
+  
+    <div class="comments" id="comments">
+    </div>
   
 
 
@@ -711,6 +736,30 @@
 
 
 
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  
+  
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(function (item) {
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'XwlBUwP2hWRDYANopc8iJeoJ-gzGzoHsz',
+        appKey: 'OX0vLKzOF4QsQzFTIhJUN4cf',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
 
 
 
