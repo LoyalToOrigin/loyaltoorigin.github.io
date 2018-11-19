@@ -1,7 +1,7 @@
 ---
 title: 通过Method运行时内存布局hook方法探索
 date: 2018-06-30
-categories: 
+categories: iOS
 ---
 
 在iOS开发中, Method Swizzling想必大家都不陌生, 可以以此来对方法进行hook, 做一些我们希望做的事情, 比如页面进入退出, 可以对viewWillAppear及viewWillDisappear进行hook, 从而进行一些埋点日志相关的事情。
@@ -71,7 +71,7 @@ void hookedSayHello (id self, SEL _cmd, ...) {
 
 此时却发现, 打印出来的却和我想象不太一样, 仍然是调用了原来的sayHello方法, 而且打个断点发现method的imp指针也确实指向了 void hookedSayHello (id self, SEL _cmd, ...) 这个函数,  这确实有些让人捉摸不透。 
 
-![直接修改方法imp](http://p28r7eh75.bkt.clouddn.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/hooked_imp.png)
+![直接修改方法imp hooked_imp.png](https://blog-1258097834.cos.ap-shanghai.myqcloud.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/hooked_imp.png?q-sign-algorithm=sha1&q-ak=AKID3X8gOkpsQYWoODHu0VScZ7anNgy25wrZ&q-sign-time=1542607075;1542608875&q-key-time=1542607075;1542608875&q-header-list=&q-url-param-list=&q-signature=48a90107da53bbb0f86989e526211dc7dc009cd3&x-cos-security-token=24e63c492b1ac72d64b8234196f5855aea4d3f4010001)
 
 ## 浅尝辄止--method _setImplementation
 
@@ -180,9 +180,9 @@ void cache_erase_nolock(Class cls)
 ```
 
 当调用Runtime API method_setImplementation, 打印如下图所示:
-![调用Runtime API method_setImplementation,cache被清除](http://p28r7eh75.bkt.clouddn.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/method_setImplementation_cache.png)
+![调用Runtime API method_setImplementation,cache被清除 method_setImplementation_cache.png](https://blog-1258097834.cos.ap-shanghai.myqcloud.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/method_setImplementation_cache.png?q-sign-algorithm=sha1&q-ak=AKID2FPDs0oH6nsXU1c322ztGQYxoP1NAXDT&q-sign-time=1542607145;1542608945&q-key-time=1542607145;1542608945&q-header-list=&q-url-param-list=&q-signature=c77bc19d3f0ccfd39d3118e22ca6a1280dae57dd&x-cos-security-token=a053262d77237f1001807b8330d6692ae545884d10001)
 当直接给imp指针赋值, 打印如下图所示:
-![imp指针赋值,cache没被清除](http://p28r7eh75.bkt.clouddn.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/direct_imp_cache.png)
+![imp指针赋值,cache没被清除 direct_imp_cache.png](https://blog-1258097834.cos.ap-shanghai.myqcloud.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/method_setImplementation_cache.png?q-sign-algorithm=sha1&q-ak=AKID2FPDs0oH6nsXU1c322ztGQYxoP1NAXDT&q-sign-time=1542607145;1542608945&q-key-time=1542607145;1542608945&q-header-list=&q-url-param-list=&q-signature=c77bc19d3f0ccfd39d3118e22ca6a1280dae57dd&x-cos-security-token=a053262d77237f1001807b8330d6692ae545884d10001)
 
 可以看出, 当直接给imp指针复制, 不清除方法缓存, 其中打印的sayHello正是我们hook的方法, 之前的疑惑也一扫而空, 虽然方法的imp指向发生了改变, 但是方法缓存中的sayHello对应的imp并没有发生改变。
 
@@ -305,7 +305,7 @@ public:
 }
 
 ```
-![自己修改cache](http://p28r7eh75.bkt.clouddn.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/direct_imp_cache_and_change_cache_imp.png)
+![自己修改cache direct_imp_cache_and_change_cache_imp.png](	https://blog-1258097834.cos.ap-shanghai.myqcloud.com/%E9%80%9A%E8%BF%87Method%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80hook%E6%96%B9%E6%B3%95%E6%8E%A2%E7%B4%A2/direct_imp_cache_and_change_cache_imp.png?q-sign-algorithm=sha1&q-ak=AKIDH34I1sxzJ2LD7oLV1n4iGnaz5qun04le&q-sign-time=1542607361;1542609161&q-key-time=1542607361;1542609161&q-header-list=&q-url-param-list=&q-signature=15a8e41a067f1371f21a86e3888d37a010d9bf15&x-cos-security-token=660f51e0c536850e9b274ef0eca3f0394c27e20410001)
 
 发现打印的确实是我们希望的实现, 当然这里只是一个简单的类, 对于有子类的情况没做验证, 如果有子类的情况下, 还是比较复杂的, 对于子类是否实现了该方法也是有区别的, 这也许也是 method_setImplementation 直接暴力地将当前类和子类的缓存都清空的原因吧!
 
