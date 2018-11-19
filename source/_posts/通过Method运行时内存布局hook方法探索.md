@@ -1,7 +1,7 @@
 ---
 title: 通过Method运行时内存布局hook方法探索
 date: 2018-06-30
-categories: 
+categories: iOS
 ---
 
 在iOS开发中, Method Swizzling想必大家都不陌生, 可以以此来对方法进行hook, 做一些我们希望做的事情, 比如页面进入退出, 可以对viewWillAppear及viewWillDisappear进行hook, 从而进行一些埋点日志相关的事情。
