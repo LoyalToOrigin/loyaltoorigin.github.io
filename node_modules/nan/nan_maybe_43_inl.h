@@ -12,19 +12,6 @@
 template<typename T>
 using MaybeLocal = v8::MaybeLocal<T>;
 
-template<typename T>
-using Maybe = v8::Maybe<T>;
-
-template<typename T>
-inline Maybe<T> Nothing() {
-  return v8::Nothing<T>();
-}
-
-template<typename T>
-inline Maybe<T> Just(const T& t) {
-  return v8::Just<T>(t);
-}
-
 inline
 MaybeLocal<v8::String> ToDetailString(v8::Local<v8::Value> val) {
   v8::Isolate *isolate = v8::Isolate::GetCurrent();
@@ -103,7 +90,7 @@ inline Maybe<bool> Set(
 }
 
 #if NODE_MODULE_VERSION < NODE_4_0_MODULE_VERSION
-#include "nan_define_own_property_helper.h"  // NOLINT(build/include)
+#include "nan_define_own_property_helper.h"  // NOLINT(build/include_subdir)
 #endif
 
 inline Maybe<bool> DefineOwnProperty(
@@ -220,7 +207,11 @@ inline Maybe<bool> SetPrototype(
   , v8::Local<v8::Value> prototype) {
   v8::Isolate *isolate = v8::Isolate::GetCurrent();
   v8::HandleScope scope(isolate);
-  return obj->SetPrototype(isolate->GetCurrentContext(), prototype);
+#if defined(V8_MAJOR_VERSION) && (V8_MAJOR_VERSION >= 14)
+    return obj->SetPrototypeV2(isolate->GetCurrentContext(), prototype);
+#else
+    return obj->SetPrototype(isolate->GetCurrentContext(), prototype);
+#endif
 }
 
 inline MaybeLocal<v8::String> ObjectProtoToString(
