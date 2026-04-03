@@ -1,3 +1,15 @@
+---
+title: 浅尝辄止 GRDB.swift：iOS/macOS 数据持久化的使用感悟
+date: 2026-04-03 14:00:00
+tags:
+  - iOS
+  - Swift
+  - GRDB
+  - SQLite
+categories:
+  - iOS
+---
+
 # 浅尝辄止 GRDB.swift：iOS/macOS 数据持久化的使用感悟
 
 > GRDB.swift 是一个基于 SQLite 的 Swift 数据库工具包，专注于应用开发体验。本文将从核心概念、关键类、使用方法、最佳实践等维度全面介绍 GRDB。
